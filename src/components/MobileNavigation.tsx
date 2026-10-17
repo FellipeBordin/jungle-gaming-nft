@@ -17,6 +17,9 @@ const homeSearch = {
   page: 1,
   network: "all" as const,
   sort: "newest" as const,
+  category: "all" as const,
+  minPrice: "",
+  maxPrice: "",
 };
 
 export function MobileNavigation() {

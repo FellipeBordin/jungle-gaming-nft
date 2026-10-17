@@ -5,4 +5,7 @@ export const defaultMarketplaceSearch: MarketplaceSearch = {
   page: 1,
   network: "all",
   sort: "newest",
+  category: "all",
+  minPrice: "",
+  maxPrice: "",
 };

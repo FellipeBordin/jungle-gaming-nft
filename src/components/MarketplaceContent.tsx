@@ -12,11 +12,15 @@ import { MintingJournal } from "./MintingJournal";
 import { Footer } from "./Footer";
 import { defaultMarketplaceSearch } from "../constants/marketplace";
 import type { NFT, NFTListResponse } from "../types/nft";
+
 export interface MarketplaceSearch {
   search: string;
   page: number;
   network: "all" | "ethereum" | "polygon" | "solana";
   sort: "newest" | "price_asc" | "price_desc";
+  category: NFTCategory;
+  minPrice: string;
+  maxPrice: string;
 }
 interface MarketplaceContentProps {
   filters: MarketplaceSearch;
@@ -69,10 +73,11 @@ export function MarketplaceContent({
 }: MarketplaceContentProps) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<MarketplaceTab>("all");
-  const [category, setCategory] = useState<NFTCategory>("all");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
   const [localPage, setLocalPage] = useState(1);
+  const category = filters.category;
+  const minPrice = filters.minPrice;
+  const maxPrice = filters.maxPrice;
+
   const query = useQuery({
     queryKey: [
       "marketplace-complete-catalog",
@@ -133,20 +138,15 @@ export function MarketplaceContent({
   function changeSort(sort: MarketplaceSearch["sort"]) {
     updateFilters({ sort });
   }
+
   function changeCategory(nextCategory: NFTCategory) {
-    if (background) return;
-    setCategory(nextCategory);
-    setLocalPage(1);
+    updateFilters({ category: nextCategory });
   }
   function changeMinPrice(value: string) {
-    if (background) return;
-    setMinPrice(value);
-    setLocalPage(1);
+    updateFilters({ minPrice: value });
   }
   function changeMaxPrice(value: string) {
-    if (background) return;
-    setMaxPrice(value);
-    setLocalPage(1);
+    updateFilters({ maxPrice: value });
   }
   function changeTab(tab: MarketplaceTab) {
     if (background) return;
@@ -170,12 +170,14 @@ export function MarketplaceContent({
   }
   function clearFilters() {
     if (background) return;
+
     setActiveTab("all");
-    setCategory("all");
-    setMinPrice("");
-    setMaxPrice("");
     setLocalPage(1);
-    void navigate({ to: "/", search: defaultMarketplaceSearch });
+
+    void navigate({
+      to: "/",
+      search: defaultMarketplaceSearch,
+    });
   }
   const visiblePageNumbers = Array.from(
     { length: Math.min(4, totalPages) },

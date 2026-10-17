@@ -185,7 +185,15 @@ function ProfileContent({
     logout();
     void navigate({
       to: "/",
-      search: { search: "", page: 1, network: "all", sort: "newest" },
+      search: {
+        search: "",
+        page: 1,
+        network: "all",
+        sort: "newest",
+        category: "all",
+        minPrice: "",
+        maxPrice: "",
+      },
     });
   }
 
@@ -393,7 +401,7 @@ function ProfileContent({
                     </div>
                   </div>
                 </div>
-                <div className="max-w-[310px] space-y-4">
+                <div className="max-w-77.5 space-y-4">
                   <h2 className="text-sm font-bold">Alterar senha</h2>
                   {(
                     [
@@ -569,6 +577,9 @@ function ProfileContent({
                     page: 1,
                     network: "all",
                     sort: "newest",
+                    category: "all",
+                    minPrice: "",
+                    maxPrice: "",
                   }}
                   className="mt-5 inline-block text-xs text-[#D28A4C]"
                 >

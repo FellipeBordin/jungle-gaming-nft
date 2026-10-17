@@ -2,13 +2,6 @@ import { useState, type FormEvent } from "react";
 import { Link } from "@tanstack/react-router";
 import { Mail, Phone } from "lucide-react";
 
-const marketplaceSearch = {
-  search: "",
-  page: 1,
-  network: "all" as const,
-  sort: "newest" as const,
-};
-
 const benefits = [
   {
     letter: "W",
@@ -158,7 +151,15 @@ export function Footer() {
         <div className="mx-auto grid max-w-7xl gap-5 px-5 py-6 text-sm font-semibold sm:px-8 md:grid-cols-2 lg:grid-cols-4 lg:items-center lg:px-10">
           <Link
             to="/"
-            search={marketplaceSearch}
+            search={{
+              search: "",
+              page: 1,
+              network: "all",
+              sort: "newest",
+              category: "all",
+              minPrice: "",
+              maxPrice: "",
+            }}
             className="text-xl font-black tracking-wider text-white"
           >
             KURIO

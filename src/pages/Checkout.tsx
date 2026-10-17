@@ -24,6 +24,12 @@ import {
 } from "../components/OrderConfirmationModal";
 
 const marketplaceSearch = {
+  category: "",
+
+  minPrice: "",
+
+  maxPrice: "",
+
   search: "",
 
   page: 1,
@@ -214,7 +220,20 @@ export function Checkout() {
         </div>
         <OrderConfirmationModal
           order={confirmedOrder}
-          onClose={() => void navigate({ to: "/", search: marketplaceSearch })}
+          onClose={() =>
+            void navigate({
+              to: "/",
+              search: {
+                page: 1,
+                network: "all",
+                sort: "newest",
+                category: "all",
+                minPrice: "",
+                maxPrice: "",
+                search: "",
+              },
+            })
+          }
         />
       </div>
     );
@@ -238,7 +257,15 @@ export function Checkout() {
 
           <Link
             to="/"
-            search={marketplaceSearch}
+            search={{
+              search: "",
+              page: 1,
+              network: "all",
+              sort: "newest",
+              category: "all",
+              minPrice: "",
+              maxPrice: "",
+            }}
             className="mt-7 inline-block rounded-lg bg-[#D9944E] px-6 py-3 text-sm text-[#211712]"
           >
             Explorar NFTs

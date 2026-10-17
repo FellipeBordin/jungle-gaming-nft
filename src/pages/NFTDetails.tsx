@@ -24,13 +24,6 @@ import { Footer } from "../components/Footer";
 import { useCart } from "../hooks/useCart";
 import type { NFT, NFTListResponse } from "../types/nft";
 
-const marketplaceSearch = {
-  search: "",
-  page: 1,
-  network: "all" as const,
-  sort: "newest" as const,
-};
-
 const networkLabels: Record<NFT["network"], string> = {
   ethereum: "Ethereum",
   polygon: "Polygon",
@@ -724,7 +717,15 @@ export function NFTDetails() {
 
             <Link
               to="/"
-              search={marketplaceSearch}
+              search={{
+                search: "",
+                page: 1,
+                network: "all",
+                sort: "newest",
+                category: "all",
+                minPrice: "",
+                maxPrice: "",
+              }}
               className="mt-5 inline-block text-[#E8A34F] underline"
             >
               Voltar ao marketplace
@@ -746,7 +747,15 @@ export function NFTDetails() {
                 <div className="absolute inset-x-0 top-0 flex items-center justify-between p-4">
                   <Link
                     to="/"
-                    search={marketplaceSearch}
+                    search={{
+                      search: "",
+                      page: 1,
+                      network: "all",
+                      sort: "newest",
+                      category: "all",
+                      minPrice: "",
+                      maxPrice: "",
+                    }}
                     aria-label="Voltar"
                     className="flex h-10 w-10 items-center justify-center rounded-full bg-[#211712]/85"
                   >
@@ -796,7 +805,15 @@ export function NFTDetails() {
               <div className="mb-5 flex items-center gap-2 text-xs font-bold">
                 <Link
                   to="/"
-                  search={marketplaceSearch}
+                  search={{
+                    search: "",
+                    page: 1,
+                    network: "all",
+                    sort: "newest",
+                    category: "all",
+                    minPrice: "",
+                    maxPrice: "",
+                  }}
                   className="text-[#E8A34F] hover:underline"
                 >
                   Início
@@ -806,7 +823,15 @@ export function NFTDetails() {
 
                 <Link
                   to="/"
-                  search={marketplaceSearch}
+                  search={{
+                    search: "",
+                    page: 1,
+                    network: "all",
+                    sort: "newest",
+                    category: "all",
+                    minPrice: "",
+                    maxPrice: "",
+                  }}
                   className="text-[#E8A34F] hover:underline"
                 >
                   Mercado

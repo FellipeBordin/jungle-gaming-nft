@@ -47,6 +47,9 @@ export function Register() {
           page: 1,
           network: "all",
           sort: "newest",
+          category: "all",
+          minPrice: "",
+          maxPrice: "",
         },
       });
     } catch (err) {
@@ -75,6 +78,9 @@ export function Register() {
               page: 1,
               network: "all",
               sort: "newest",
+              category: "all",
+              minPrice: "",
+              maxPrice: "",
             }}
             className="mt-6 inline-block text-[#D9944E]"
           >
@@ -95,6 +101,9 @@ export function Register() {
             page: 1,
             network: "all",
             sort: "newest",
+            category: "all",
+            minPrice: "",
+            maxPrice: "",
           }}
           className="text-3xl font-black tracking-[0.2em] md:text-xl"
         >

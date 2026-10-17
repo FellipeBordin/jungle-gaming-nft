@@ -19,13 +19,6 @@ import { Footer } from "../components/Footer";
 import { useCart } from "../hooks/useCart";
 import type { NFT, NFTListResponse } from "../types/nft";
 
-const homeSearch = {
-  search: "",
-  page: 1,
-  network: "all" as const,
-  sort: "newest" as const,
-};
-
 function formatEth(value: number | string) {
   return `${Number(value).toFixed(2)} ETH`;
 }
@@ -201,7 +194,15 @@ export function Cart() {
         <nav className="mb-5 hidden items-center gap-2 text-[11px] font-bold md:flex">
           <Link
             to="/"
-            search={homeSearch}
+            search={{
+              search: "",
+              page: 1,
+              network: "all",
+              sort: "newest",
+              category: "all",
+              minPrice: "",
+              maxPrice: "",
+            }}
             className="text-[#E3A04F] hover:underline"
           >
             Início
@@ -211,7 +212,15 @@ export function Cart() {
 
           <Link
             to="/"
-            search={homeSearch}
+            search={{
+              search: "",
+              page: 1,
+              network: "all",
+              sort: "newest",
+              category: "all",
+              minPrice: "",
+              maxPrice: "",
+            }}
             className="text-[#E3A04F] hover:underline"
           >
             Mercado
@@ -226,7 +235,15 @@ export function Cart() {
           <div className="mb-6 flex items-center gap-3 md:hidden">
             <Link
               to="/"
-              search={homeSearch}
+              search={{
+                search: "",
+                page: 1,
+                network: "all",
+                sort: "newest",
+                category: "all",
+                minPrice: "",
+                maxPrice: "",
+              }}
               aria-label="Voltar ao marketplace"
               className="flex h-10 w-10 items-center justify-center rounded-full bg-[#4A3029]"
             >
@@ -257,7 +274,15 @@ export function Cart() {
 
               <Link
                 to="/"
-                search={homeSearch}
+                search={{
+                  search: "",
+                  page: 1,
+                  network: "all",
+                  sort: "newest",
+                  category: "all",
+                  minPrice: "",
+                  maxPrice: "",
+                }}
                 className="mt-7 inline-flex items-center gap-2 rounded-xl bg-[#D9944E] px-6 py-3 text-xs font-bold text-[#120D0B]"
               >
                 Explorar NFTs
@@ -532,7 +557,15 @@ export function Cart() {
 
                 <Link
                   to="/"
-                  search={homeSearch}
+                  search={{
+                    search: "",
+                    page: 1,
+                    network: "all",
+                    sort: "newest",
+                    category: "all",
+                    minPrice: "",
+                    maxPrice: "",
+                  }}
                   className="mt-4 flex items-center justify-center text-[11px] text-[#D9944E] hover:underline"
                 >
                   Continuar explorando

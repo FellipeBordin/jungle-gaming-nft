@@ -17,13 +17,6 @@ const banners = [
   },
 ];
 
-const marketplaceSearch = {
-  search: "",
-  page: 1,
-  network: "all" as const,
-  sort: "newest" as const,
-};
-
 export function PromotionalBanners() {
   return (
     <section
@@ -57,7 +50,15 @@ export function PromotionalBanners() {
 
             <Link
               to="/"
-              search={marketplaceSearch}
+              search={{
+                search: "",
+                page: 1,
+                network: "all",
+                sort: "newest",
+                category: "all",
+                minPrice: "",
+                maxPrice: "",
+              }}
               hash="marketplace"
               className="mt-3 inline-flex items-center justify-center rounded-sm bg-[#D9944E] px-4 py-1.5 font-mono text-[10px] font-bold text-[#120D0B] transition hover:bg-[#E9A963]"
             >
