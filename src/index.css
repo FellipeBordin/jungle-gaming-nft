@@ -5,3 +5,24 @@
     padding-bottom: calc(64px + env(safe-area-inset-bottom));
   }
 }
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+  background-color: #140d0a;
+}
+
+html {
+  min-height: 100dvh;
+}
+
+body,
+#root {
+  min-height: 100dvh;
+}
+
+body {
+  overflow-x: hidden;
+}

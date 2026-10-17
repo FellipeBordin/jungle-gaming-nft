@@ -1,54 +1,45 @@
+import { useEffect, type ReactNode } from "react";
+import { useNavigate } from "@tanstack/react-router";
 
-import { useEffect, type ReactNode } from 'react'
-import { useNavigate } from '@tanstack/react-router'
-
-import {
-  MarketplaceContent,
-  defaultMarketplaceSearch,
-} from './MarketplaceContent'
+import { MarketplaceContent } from "./MarketplaceContent";
+import { defaultMarketplaceSearch } from "../constants/marketplace";
 
 interface AuthModalProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 export function AuthModal({ children }: AuthModalProps) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   function closeModal() {
     void navigate({
-      to: '/',
+      to: "/",
       search: defaultMarketplaceSearch,
-    })
+    });
   }
 
   useEffect(() => {
     function handleEscape(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         void navigate({
-          to: '/',
+          to: "/",
           search: defaultMarketplaceSearch,
-        })
+        });
       }
     }
 
-    window.addEventListener('keydown', handleEscape)
+    window.addEventListener("keydown", handleEscape);
 
     return () => {
-      window.removeEventListener('keydown', handleEscape)
-    }
-  }, [navigate])
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [navigate]);
 
   return (
     <>
       {/* MARKETPLACE AO FUNDO: SOMENTE DESKTOP */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none hidden md:block"
-      >
-        <MarketplaceContent
-          filters={defaultMarketplaceSearch}
-          background
-        />
+      <div aria-hidden="true" className="pointer-events-none hidden md:block">
+        <MarketplaceContent filters={defaultMarketplaceSearch} background />
       </div>
 
       {/* MODAL / TELA MOBILE */}
@@ -79,5 +70,5 @@ export function AuthModal({ children }: AuthModalProps) {
         </div>
       </div>
     </>
-  )
+  );
 }

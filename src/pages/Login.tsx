@@ -1,52 +1,50 @@
+import { useState, type FormEvent } from "react";
+import { isAxiosError } from "axios";
+import { Link, useNavigate } from "@tanstack/react-router";
 
-import { useState, type FormEvent } from 'react'
-import { isAxiosError } from 'axios'
-import { Link, useNavigate } from '@tanstack/react-router'
-
-import { AuthModal } from '../components/AuthModal'
-import { useAuth } from '../contexts/AuthContext'
+import { AuthModal } from "../components/AuthModal";
+import { useAuth } from "../hooks/useAuth";
 
 export function Login() {
-  const navigate = useNavigate()
-  const { login, user } = useAuth()
+  const navigate = useNavigate();
+  const { login, user } = useAuth();
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setError('')
-    setIsSubmitting(true)
+    event.preventDefault();
+    setError("");
+    setIsSubmitting(true);
 
     try {
       await login({
         email: email.trim(),
         password,
-      })
+      });
 
       await navigate({
-        to: '/',
+        to: "/",
         search: {
-          search: '',
+          search: "",
           page: 1,
-          network: 'all',
-          sort: 'newest',
+          network: "all",
+          sort: "newest",
         },
-      })
+      });
     } catch (err) {
       if (isAxiosError(err)) {
         setError(
-          err.response?.data?.message ??
-            'Não foi possível realizar o login.',
-        )
+          err.response?.data?.message ?? "Não foi possível realizar o login.",
+        );
       } else {
-        setError('Ocorreu um erro inesperado.')
+        setError("Ocorreu um erro inesperado.");
       }
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
@@ -54,17 +52,15 @@ export function Login() {
     return (
       <AuthModal>
         <div className="py-16 text-center">
-          <h1 className="text-2xl font-bold">
-            Você já está conectado
-          </h1>
+          <h1 className="text-2xl font-bold">Você já está conectado</h1>
 
           <Link
             to="/"
             search={{
-              search: '',
+              search: "",
               page: 1,
-              network: 'all',
-              sort: 'newest',
+              network: "all",
+              sort: "newest",
             }}
             className="mt-6 inline-block text-[#D9944E]"
           >
@@ -72,7 +68,7 @@ export function Login() {
           </Link>
         </div>
       </AuthModal>
-    )
+    );
   }
 
   return (
@@ -81,10 +77,10 @@ export function Login() {
         <Link
           to="/"
           search={{
-            search: '',
+            search: "",
             page: 1,
-            network: 'all',
-            sort: 'newest',
+            network: "all",
+            sort: "newest",
           }}
           className="text-3xl font-black tracking-[0.2em] md:text-xl"
         >
@@ -92,9 +88,7 @@ export function Login() {
         </Link>
       </div>
 
-      <h1 className="mb-8 text-center text-2xl font-bold md:text-xl">
-        Entrar
-      </h1>
+      <h1 className="mb-8 text-center text-2xl font-bold md:text-xl">Entrar</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -121,7 +115,7 @@ export function Login() {
 
           <input
             id="login-password"
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             autoComplete="current-password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
@@ -133,10 +127,10 @@ export function Login() {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+            aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
             className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-[#D9944E]"
           >
-            {showPassword ? 'Ocultar' : 'Ver'}
+            {showPassword ? "Ocultar" : "Ver"}
           </button>
         </div>
 
@@ -165,15 +159,13 @@ export function Login() {
           disabled={isSubmitting}
           className="mt-5 w-full rounded-lg bg-[#F2B654] px-6 py-3 font-bold text-[#211712] transition hover:bg-[#FFD080] disabled:opacity-50"
         >
-          {isSubmitting ? 'Entrando...' : 'Entrar'}
+          {isSubmitting ? "Entrando..." : "Entrar"}
         </button>
       </form>
 
       <div className="my-8 flex items-center gap-3">
         <div className="h-px flex-1 bg-[#795B4D]" />
-        <span className="text-xs text-gray-300">
-          Ou continue com
-        </span>
+        <span className="text-xs text-gray-300">Ou continue com</span>
         <div className="h-px flex-1 bg-[#795B4D]" />
       </div>
 
@@ -198,7 +190,7 @@ export function Login() {
       </div>
 
       <p className="mt-10 text-center text-sm text-gray-300">
-        Novo na Kurio?{' '}
+        Novo na Kurio?{" "}
         <Link
           to="/register"
           className="font-semibold text-[#F2B654] hover:underline"
@@ -207,5 +199,5 @@ export function Login() {
         </Link>
       </p>
     </AuthModal>
-  )
+  );
 }

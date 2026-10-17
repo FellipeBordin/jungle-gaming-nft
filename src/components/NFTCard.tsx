@@ -1,9 +1,8 @@
-
-import { Link } from '@tanstack/react-router'
-import type { NFT } from '../types/nft'
+import { Link } from "@tanstack/react-router";
+import type { NFT } from "../types/nft";
 
 interface NFTCardProps {
-  nft: NFT
+  nft: NFT;
 }
 
 export function NFTCard({ nft }: NFTCardProps) {
@@ -12,36 +11,29 @@ export function NFTCard({ nft }: NFTCardProps) {
       <Link
         to="/nft/$nftId"
         params={{ nftId: nft.id }}
-        className="block rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D9944E]"
+        className="block rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D9944E]"
       >
         {/* IMAGEM DO NFT */}
-        <div className="relative aspect-square overflow-hidden rounded-xl bg-[#302018]">
+        <div className="aspect-square overflow-hidden rounded-xl bg-[#211712] shadow-[0_12px_30px_rgba(0,0,0,0.65)] ring-1 ring-[#6B4634]/40">
           <img
             src={nft.imageUrl}
             alt={`Arte digital ${nft.name}`}
             loading="lazy"
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
-
-          {/* INDICADOR DE EDIÇÃO LIMITADA */}
-          {nft.available <= 5 && (
-            <span className="absolute left-2 top-2 rounded bg-[#D9944E] px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-[#120D0B]">
-              Limitado
-            </span>
-          )}
         </div>
 
         {/* INFORMAÇÕES */}
-        <div className="pt-3">
-          <h3 className="truncate text-sm font-semibold text-white transition-colors group-hover:text-[#D9944E] sm:text-base">
+        <div className="px-1 pt-2">
+          <h3 className="truncate font-mono text-xs font-semibold text-white transition-colors group-hover:text-[#D9944E]">
             {nft.name}
           </h3>
 
-          <p className="mt-1 text-sm font-medium text-[#D9944E]">
-            {nft.priceEth} ETH
+          <p className="mt-1 font-mono text-xs font-bold text-[#D9944E]">
+            {Number(nft.priceEth).toFixed(2)} ETH
           </p>
         </div>
       </Link>
     </article>
-  )
+  );
 }
