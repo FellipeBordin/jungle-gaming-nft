@@ -427,4 +427,73 @@ test.describe("Kurio NFT Marketplace", () => {
 
     await expect(page).toHaveURL(/network=ethereum/);
   });
+
+  // TESTE 9 — Persistência do carrinho após atualizar a página
+  test("deve manter o NFT no carrinho após recarregar", async ({ page }) => {
+    // Abre os detalhes de um NFT.
+    await page.goto("/nft/1");
+
+    const addButton = page.getByRole("button", {
+      name: "Adicionar ao carrinho",
+    });
+
+    await expect(addButton).toBeVisible();
+    await expect(addButton).toBeEnabled();
+
+    // Adiciona o NFT ao carrinho.
+    await addButton.click();
+
+    await expect(
+      page.getByText(/unidade adicionada ao carrinho/i),
+    ).toBeVisible();
+
+    // Abre o carrinho.
+    await page
+      .getByRole("link", {
+        name: /Ver carrinho/i,
+      })
+      .click();
+
+    await expect(page).toHaveURL(/\/cart$/);
+
+    // Confirma que existe um produto.
+    await expect(page.getByText(/seu carrinho está vazio/i)).toHaveCount(0);
+
+    // Atualiza a página.
+    await page.reload();
+
+    // Confirma que o produto continua no carrinho.
+    await expect(page.getByText(/seu carrinho está vazio/i)).toHaveCount(0);
+
+    await expect(
+      page.getByRole("link", {
+        name: "Conectar e finalizar",
+      }),
+    ).toBeVisible();
+  });
+
+  // TESTE 10 — Tratamento de NFT inexistente (404)
+  test("deve informar quando um NFT não existe", async ({ page }) => {
+    // Acessa um NFT que não existe na API simulada.
+    await page.goto("/nft/999999");
+
+    // Confirma que a aplicação mostra uma mensagem adequada.
+    await expect(
+      page.getByRole("heading", {
+        name: "NFT não encontrado",
+      }),
+    ).toBeVisible({ timeout: 15000 });
+
+    // Verifica se o usuário pode voltar ao marketplace.
+    const backLink = page.getByRole("link", {
+      name: "Voltar ao marketplace",
+    });
+
+    await expect(backLink).toBeVisible();
+
+    await backLink.click();
+
+    // Confirma o retorno à página inicial.
+    await expect(page).toHaveURL(/\/\?search=/);
+  });
 });
