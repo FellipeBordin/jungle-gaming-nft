@@ -1,113 +1,188 @@
-Arquitetura — Kurio NFT Marketplace
+# Arquitetura — Kurio NFT Marketplace
 
-1. Visão geral
-   O Kurio NFT Marketplace é uma aplicação demonstrativa de marketplace de NFTs desenvolvida como desafio técnico de Front-End para a Jungle Gaming. O projeto utiliza React e TypeScript, com uma API simulada no navegador, para permitir a exploração do catálogo, a autenticação demonstrativa, o gerenciamento do carrinho e a simulação de pedidos.
-   Demonstração: https://jungle-gaming-nft.vercel.app/
-   Repositório: https://github.com/FellipeBordin/jungle-gaming-nft
-   O sistema é uma demonstração: não realiza pagamentos, assinaturas de carteira ou transferências reais de NFTs em blockchain.
+## 1. Visão geral
 
-2. Stack e responsabilidades
-   Tecnologia Responsabilidade
-   React 19 e TypeScript Componentes, tipagem e lógica da interface
-   Vite 8 Ambiente de desenvolvimento e build de produção
-   Tailwind CSS 4 Estilização responsiva
-   shadcn/ui Componentes reutilizáveis de interface, incluindo botões de compra
-   Lucide React Ícones da interface
-   TanStack Router Navegação e organização das rotas
-   TanStack Query Cache, carregamento e atualização de dados assíncronos
-   Axios Cliente HTTP dos serviços REST que o utilizam
-   Mock Service Worker (MSW) Interceptação de requisições e simulação da API
-   Socket.IO Recepção de eventos demonstrativos em tempo real
-   Playwright Testes automatizados de ponta a ponta (E2E)
+O **Kurio NFT Marketplace** é uma aplicação demonstrativa de marketplace de NFTs desenvolvida para o desafio técnico de Front-End da Jungle Gaming. A interface React/TypeScript consome uma API simulada pelo MSW, mantém estados locais e recebe eventos demonstrativos via Socket.IO.
 
-3. Organização do código
-   src/
-   ├── components/ # Componentes reutilizáveis, incluindo ui/
-   ├── contexts/ # Autenticação e estado do carrinho
-   ├── hooks/ # Hooks para contextos e dados
-   ├── mocks/ # Fixtures e handlers HTTP do MSW
-   ├── pages/ # Páginas e fluxos da aplicação
-   ├── realtime/ # Cliente Socket.IO e atualização do cache
-   ├── routes/ # Configuração do TanStack Router
-   ├── services/ # Cliente HTTP e serviços de API
-   └── types/ # Tipos e contratos TypeScript
-   server/
-   └── socket.cjs # Servidor demonstrativo de eventos
-   public/
-   └── nfts/ # Imagens locais dos colecionáveis
-   A separação por responsabilidade facilita a manutenção: páginas compõem a interface; componentes concentram elementos reutilizáveis; contextos controlam estados compartilhados; serviços concentram parte das chamadas HTTP; e mocks simulam as respostas da API.
-4. Inicialização e fluxo de dados
-   Em src/main.tsx, a aplicação:
-5. Verifica VITE_ENABLE_MOCKS; quando definido como true, inicializa o worker do MSW antes de renderizar a interface.
-6. Inicializa o QueryClient do TanStack Query, com staleTime de 60 segundos, uma tentativa de repetição e sem atualização automática ao focar a janela.
-7. Monta os provedores de cache, autenticação e carrinho, além do roteador.
-8. Inicializa o listener de eventos Socket.IO.
-   Fluxo simplificado:
-   Interface React
-   ├── TanStack Router → navegação
-   ├── Contextos → autenticação e carrinho
-   ├── TanStack Query → cache de consultas
-   ├── Serviços HTTP / requisições REST
-   │ └── MSW → handlers e dados demonstrativos
-   └── Socket.IO → eventos → atualização/invalidação de cache
-   Observação: parte das requisições do catálogo e da página de detalhes ainda utiliza fetch diretamente, enquanto os serviços de autenticação utilizam Axios. Portanto, a centralização de todas as chamadas REST em Axios ainda é uma melhoria pendente.
-9. API simulada com MSW
-   O MSW intercepta requisições HTTP no navegador e responde usando fixtures e handlers locais. Isso permite testar os fluxos sem depender de uma API de produção.
-   Método Endpoint Uso
-   GET /api/nfts Listagem, busca, filtros e paginação
-   GET /api/nfts/:id Detalhes de um NFT
-   POST /api/auth/register Cadastro demonstrativo
-   POST /api/auth/login Login demonstrativo
-   GET /api/auth/me Recuperação da sessão
-   POST /api/orders Criação de pedido demonstrativo
-   GET /api/orders?email=... Consulta demonstrativa de pedidos
+- **Aplicação:** https://jungle-gaming-nft.vercel.app/
+- **Repositório:** https://github.com/FellipeBordin/jungle-gaming-nft
+- **Instruções de execução:** [README.md](./README.md)
 
-As fixtures do catálogo ficam em src/mocks/fixtures.ts. Cadastros e pedidos simulados são armazenados no localStorage do navegador. Esses dados não constituem um banco de dados compartilhado entre dispositivos.
+O sistema não executa pagamentos, assinaturas de carteira ou transferências reais em blockchain.
 
-6. Autenticação e isolamento de carrinhos
-   O AuthProvider mantém o usuário autenticado em memória e utiliza um token demonstrativo no localStorage. Ao recarregar a página, tenta recuperar a sessão pelo endpoint /api/auth/me.
-   O CartProvider mantém os itens e as quantidades, com persistência local. O armazenamento é separado por identificador do usuário; visitantes usam uma chave própria. No login, os itens do carrinho de visitante são mesclados aos da conta autenticada, respeitando o limite de disponibilidade informado no NFT. Ao alternar entre contas, cada usuário recupera seu próprio carrinho.
-   Essas medidas evitam a mistura de carrinhos na interface do mesmo navegador, mas não substituem autorização no servidor. O endpoint demonstrativo de histórico de pedidos utiliza e-mail como filtro e não oferece isolamento seguro para um ambiente de produção.
-7. Carrinho e checkout
-   O carrinho oferece adição e remoção de NFTs, alteração de quantidade, cálculo de total e persistência após atualização da página. O checkout utiliza uma API simulada para criar pedidos e apresenta a confirmação com o identificador retornado.
-   O valor total exibido é calculado no cliente a partir dos preços presentes nos itens. Uma implementação de produção exigiria validação de preço e estoque no servidor, cálculo autoritativo do pedido, autenticação/autorização, idempotência e tratamento de concorrência antes da confirmação de compra.
-   A seleção de carteira e o pagamento são demonstrativos: não há conexão blockchain ou transferência real de ativos.
-8. Eventos em tempo real
-   O servidor em server/socket.cjs emite periodicamente eventos nft.updated, contendo identificador, versão e disponibilidade do NFT. O componente src/realtime/SocketListener.tsx recebe esses eventos e procura atualizar entradas do cache do TanStack Query.
-   A atualização compara a versão recebida com a versão armazenada, evitando substituir um NFT por dados mais antigos. O listener também está preparado para receber order.updated e invalidar consultas de pedidos.
-   Limitações atuais: o servidor demonstrativo não emite order.updated. Além disso, a consulta agregada do catálogo utiliza uma chave de cache diferente das chaves tratadas pelo listener; por isso, nem todas as visualizações do marketplace recebem necessariamente a atualização em tempo real sem nova consulta.
-9. Interface, responsividade e acessibilidade
-   A interface utiliza Tailwind CSS para adaptação a diferentes tamanhos de tela, componentes React reutilizáveis e elementos do shadcn/ui. Os fluxos incluem estados de carregamento, erros e mensagens de interface. A aplicação foi submetida a auditorias Lighthouse nas versões mobile e desktop.
-   Os componentes e fluxos devem continuar sendo avaliados quanto a navegação por teclado, rótulos acessíveis, contraste, estados de foco e experiência em telas pequenas.
-10. Testes e qualidade
-    O projeto possui testes E2E com Playwright, incluindo navegação, autenticação, detalhes dos NFTs, carrinho, filtros, ordenação e compra demonstrativa. A configuração atual executa os testes no Chromium desktop e utiliza o MSW durante a execução.
-    Comandos de validação:
-    npm run lint
-    npm run build
-    npx playwright test
-    Os testes existentes passaram após a integração do shadcn/ui e a implementação da persistência do carrinho. Testes automatizados específicos de múltiplos usuários, projetos mobile no Playwright e baselines de regressão visual ainda podem ser ampliados.
-11. Ambiente e implantação
-    O frontend é publicado na Vercel. O servidor demonstrativo Socket.IO é hospedado no Render.
-    Variáveis utilizadas:
-    VITE_ENABLE_MOCKS=true
-    VITE_SOCKET_URL=http://localhost:3001
-    Para executar localmente:
-    npm install
-    node server/socket.cjs
-    Em outro terminal:
-    npm run dev
-    O endereço do Socket.IO deve ser ajustado conforme o ambiente. O frontend funciona com os endpoints simulados do MSW mesmo quando o servidor de eventos não está disponível.
-12. Limitações e próximos passos
+## 2. Stack e responsabilidades
 
-- Centralizar todas as chamadas REST no cliente Axios e padronizar o tratamento de erros.
-- Integrar o catálogo agregado às atualizações do Socket.IO.
-- Implementar emissão e tratamento completos de order.updated, com transições de status.
-- Criar uma API de cotação e validação autoritativa de preço, estoque, cupom e idempotência.
-- Proteger o histórico de pedidos por identidade autenticada no servidor.
-- Substituir a autenticação demonstrativa por uma solução segura; os dados locais de teste não devem conter credenciais reais.
-- Ampliar os testes Playwright para mobile, persistência, isolamento entre usuários e regressão visual.
-- Considerar divisão de código por rota e outras otimizações conforme novas medições de desempenho.
+| Tecnologia | Responsabilidade |
+| --- | --- |
+| React 19 e TypeScript | Componentes, tipagem e lógica da interface |
+| Vite 8 | Desenvolvimento e build |
+| Tailwind CSS 4 | Estilização e responsividade |
+| shadcn/ui e Lucide React | Componentes reutilizáveis e ícones |
+| TanStack Router | Rotas e navegação |
+| TanStack Query | Cache, carregamento e atualização de dados |
+| Axios | Cliente HTTP para os serviços que o utilizam |
+| MSW | Interceptação HTTP e respostas simuladas |
+| Socket.IO | Eventos de disponibilidade de NFTs |
+| Playwright | Testes E2E e regressão visual em desktop e mobile |
 
-13. Decisões arquiteturais
-    O MSW foi escolhido para permitir uma experiência funcional e testável sem backend de produção. O TanStack Query concentra o cache das consultas assíncronas, enquanto os contextos React mantêm estados da sessão e do carrinho. O Socket.IO demonstra a integração orientada a eventos. A separação entre componentes, páginas, serviços e mocks permite substituir gradualmente as implementações simuladas por serviços reais.
-    O objetivo do projeto é demonstrar competências de desenvolvimento Front-End, integração de APIs, gerenciamento de estado, responsividade, testes e organização de código, com limitações técnicas explicitamente documentadas.
+## 3. Organização do código
+
+```text
+src/
+├── components/       # Componentes compartilhados, incluindo ui/
+├── contexts/         # Autenticação e carrinho
+├── hooks/            # Hooks de acesso a dados e estados
+├── mocks/            # Fixtures e handlers HTTP
+├── pages/            # Telas e fluxos de usuário
+├── realtime/         # Cliente Socket.IO e cache
+├── routes/           # Configuração do TanStack Router
+├── services/         # Serviços REST e Axios
+└── types/            # Contratos TypeScript
+server/
+└── socket.cjs        # Servidor de eventos demonstrativos
+tests/
+├── marketplace.spec.ts
+├── visual.spec.ts
+└── visual.spec.ts-snapshots/
+public/
+└── nfts/             # Imagens do catálogo
+```
+
+A separação por responsabilidade mantém os componentes de apresentação distintos dos contextos de estado, das consultas e dos handlers simulados.
+
+## 4. Inicialização e fluxo de dados
+
+Em `src/main.tsx`, a aplicação inicializa o worker do MSW quando `VITE_ENABLE_MOCKS=true`, configura o TanStack Query e monta os provedores, o roteador e a integração de eventos.
+
+```text
+Interface React
+├── TanStack Router → navegação
+├── Contextos → sessão e carrinho
+├── TanStack Query → consultas e cache
+├── Serviços HTTP / chamadas REST → MSW → fixtures e handlers
+└── Socket.IO → eventos → atualização/invalidação de cache
+```
+
+O cliente Axios é utilizado em serviços de API, mas partes do catálogo e dos detalhes ainda usam `fetch` diretamente. A centralização de todas as chamadas REST no Axios é uma melhoria pendente.
+
+## 5. API demonstrativa (MSW)
+
+| Método | Endpoint | Uso |
+| --- | --- | --- |
+| GET | `/api/nfts` | Catálogo, busca, filtros e paginação |
+| GET | `/api/nfts/:id` | Detalhes de NFT |
+| POST | `/api/auth/register` | Cadastro |
+| POST | `/api/auth/login` | Login |
+| GET | `/api/auth/me` | Recuperação de sessão |
+| POST | `/api/orders` | Criação de pedido demonstrativo |
+| GET | `/api/orders?email=...` | Histórico filtrado por e-mail |
+
+As fixtures ficam em `src/mocks/fixtures.ts`. Os dados demonstrativos de cadastro e pedidos são armazenados no `localStorage` e não são compartilhados por um backend persistente.
+
+## 6. Autenticação e persistência do carrinho
+
+O contexto de autenticação mantém o usuário da sessão e utiliza um token demonstrativo no `localStorage`. Ao atualizar a página, tenta recuperar a sessão por `GET /api/auth/me`.
+
+O contexto do carrinho utiliza chaves locais separadas para visitantes e para cada identificador de usuário:
+
+- O visitante mantém o carrinho após atualizar a página.
+- No login, os itens do visitante são mesclados ao carrinho da conta autenticada, respeitando os limites de disponibilidade.
+- Ao alternar entre contas no mesmo navegador, cada usuário recupera seu próprio carrinho.
+
+Esse isolamento é **local e demonstrativo**. Não substitui autenticação e autorização no servidor. O histórico de pedidos filtrado por e-mail também não implementa controle de acesso seguro para produção.
+
+## 7. Carrinho, checkout e pedidos
+
+O carrinho permite adicionar, remover e alterar quantidades, calcular o total e persistir os itens. O checkout possui interfaces distintas para desktop e mobile e exige o preenchimento dos dados necessários à criação do pedido.
+
+O fluxo demonstrativo envia os itens para `POST /api/orders` e, quando a resposta indica `confirmed`, apresenta um modal com o ID retornado pela API.
+
+O total exibido é calculado no cliente. Uma implementação de produção exigiria cotação e validação autoritativas de preço e estoque, autorização, idempotência, controle de concorrência e tratamento de erros transacionais.
+
+A seleção de carteira é apenas visual; não existe pagamento ou transferência real de NFTs.
+
+## 8. Eventos em tempo real
+
+O servidor `server/socket.cjs` emite periodicamente `nft.updated` com identificador, versão, disponibilidade e data da atualização. O listener `src/realtime/SocketListener.tsx` compara versões antes de atualizar entradas específicas do cache do TanStack Query.
+
+Limitações:
+
+- O servidor demonstrativo não emite `order.updated`, embora o cliente possua tratamento preparado para esse evento.
+- A consulta agregada do marketplace utiliza uma chave de cache diferente de algumas chaves tratadas pelo listener; por isso, nem todas as visualizações são atualizadas imediatamente.
+- Os eventos demonstram integração em tempo real, não uma fonte autoritativa de estoque ou pedidos.
+
+## 9. Interface, responsividade e acessibilidade
+
+A interface utiliza Tailwind CSS, componentes reutilizáveis e shadcn/ui. Os fluxos incluem estados de carregamento, erro e conteúdo vazio.
+
+Foram realizadas medições Lighthouse na página inicial, antes das alterações mais recentes:
+
+| Ambiente | Performance | Acessibilidade | Boas práticas | SEO |
+| --- | ---: | ---: | ---: | ---: |
+| Mobile | 97 | 99 | 100 | 100 |
+| Desktop | 100 | 99 | 100 | 100 |
+
+Os resultados são pontuais e não equivalem a uma nova auditoria da versão final. Navegação por teclado, rótulos, contraste e foco devem continuar sendo avaliados à medida que a interface evolui.
+
+## 10. Testes e qualidade
+
+O Playwright está configurado em `playwright.config.ts` para executar os testes com MSW em dois projetos:
+
+- `chromium`: Desktop Chrome.
+- `mobile-chrome`: perfil Pixel 7 utilizando Chromium.
+
+Na última execução local informada, **18 testes passaram**:
+
+| Suíte | Desktop | Mobile | Total |
+| --- | ---: | ---: | ---: |
+| Fluxos funcionais | 8 | 8 | 16 |
+| Regressão visual da página inicial | 1 | 1 | 2 |
+| **Total** | **9** | **9** | **18** |
+
+Os testes funcionais verificam carregamento, cadastro/login, detalhes de NFT, carrinho, checkout, ordenação, filtro por rede e compra confirmada pela API. O teste visual utiliza `toHaveScreenshot` com imagens de referência versionadas em `tests/visual.spec.ts-snapshots/`.
+
+```bash
+npm install
+npx playwright install chromium
+npx playwright test
+npx playwright test tests/visual.spec.ts
+npm run lint
+npm run build
+```
+
+As referências visuais foram geradas em Windows; diferenças de ambiente podem afetar a comparação. Os testes não realizam pagamentos reais. Persistência e isolamento entre contas foram também verificados manualmente; ainda não há testes automatizados específicos desses cenários.
+
+## 11. Ambiente e implantação
+
+O frontend está hospedado na Vercel e o servidor Socket.IO demonstrativo, no Render.
+
+```env
+VITE_ENABLE_MOCKS=true
+VITE_SOCKET_URL=http://localhost:3001
+```
+
+```bash
+npm install
+node server/socket.cjs
+# Em outro terminal:
+npm run dev
+```
+
+Em produção, `VITE_SOCKET_URL` deve apontar para o serviço Socket.IO do ambiente. O frontend permanece utilizável com os endpoints MSW mesmo sem conexão com o servidor de eventos.
+
+## 12. Limitações e próximos passos
+
+- Centralizar todas as chamadas REST no Axios e padronizar o tratamento de erros.
+- Integrar a consulta agregada do catálogo às atualizações do Socket.IO.
+- Implementar `order.updated` e transições de status de pedidos.
+- Adicionar cotação, validação autoritativa de preço/estoque, cupons e idempotência.
+- Proteger histórico de pedidos e sessões com autenticação/autorização reais.
+- Não armazenar credenciais reais nos mocks locais.
+- Ampliar os testes automatizados para persistência, isolamento entre contas, falhas de API e outras telas visuais.
+- Avaliar code splitting e otimizações adicionais com novas medições.
+
+## 13. Decisões arquiteturais
+
+O MSW permite executar e testar fluxos sem depender de um backend de produção. O TanStack Query gerencia consultas e cache, enquanto os contextos React mantêm estados da sessão e do carrinho. O Socket.IO demonstra a recepção de eventos, e o Playwright valida fluxos completos e estabilidade visual em dois tamanhos de tela.
+
+O objetivo é demonstrar competências de Front-End, integração com APIs, gerenciamento de estado, responsividade, testes e organização do código, mantendo as limitações explicitamente documentadas.
