@@ -184,9 +184,11 @@ export function MarketplaceContent({
       return start + index;
     },
   );
+
   return (
     <div className="min-h-screen bg-[#140D0A] font-mono text-white">
       <Header />
+
       <main className="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
         {/* HERO — DESKTOP E MOBILE */}
         <section className="relative pt-3 pb-5 sm:py-10 md:grid md:grid-cols-[1.15fr_0.85fr] md:items-center md:gap-14 md:py-16">
@@ -198,12 +200,15 @@ export function MarketplaceContent({
                 <p className="mb-2 font-mono text-[10px] font-semibold text-[#E9D9C9]">
                   Bem-vindo à Kurio
                 </p>
+
                 <h1 className="font-mono text-[clamp(13px,3.8vw,18px)] font-extrabold leading-[1.3] text-[#F2EBE5]">
                   SEJA DONO DA CULTURA DIGITAL
                 </h1>
+
                 <p className="mt-2 font-mono text-[9px] leading-[1.5] text-[#C8A98C]">
                   Descubra NFTs selecionados de criadores do mundo todo.
                 </p>
+
                 <a
                   href="#marketplace"
                   tabIndex={background ? -1 : undefined}
@@ -213,6 +218,7 @@ export function MarketplaceContent({
                   <span aria-hidden="true">→</span>
                 </a>
               </div>
+
               {/* IMAGEM */}
               <div className="aspect-square min-w-0 overflow-hidden rounded-xl bg-[#E7E4C7]">
                 <img
@@ -222,6 +228,7 @@ export function MarketplaceContent({
                 />
               </div>
             </div>
+
             {/* INDICADORES */}
             <div
               className="mt-2 flex items-center justify-center gap-1.5"
@@ -232,20 +239,24 @@ export function MarketplaceContent({
               <span className="h-1.5 w-1.5 rounded-full bg-[#D9944E]/50" />
             </div>
           </div>
-          {/* HERO DESKTOP — PRESERVADO */}
+
+          {/* HERO DESKTOP */}
           <div className="hidden min-w-0 md:block md:pl-6">
             <p className="mb-4 text-sm tracking-[0.12em] text-[#E9D9C9]">
               Bem-vindo à Kurio
             </p>
+
             <h1 className="max-w-2xl text-[clamp(1.75rem,3.5vw,3.5rem)] font-extrabold leading-[1.3] tracking-[0.015em] text-[#F2EBE5]">
               SEJA DONO DO FUTURO
               <span className="block">DA ARTE DIGITAL</span>
             </h1>
+
             <p className="mt-5 max-w-lg text-sm leading-6 text-[#C8A98C]">
               Descubra NFTs selecionados de criadores emergentes e consagrados.
               Colecione arte digital rara, apoie artistas e tenha uma parte da
               cultura da internet.
             </p>
+
             <a
               href="#marketplace"
               tabIndex={background ? -1 : undefined}
@@ -253,6 +264,7 @@ export function MarketplaceContent({
             >
               EXPLORAR
             </a>
+
             <div
               className="mt-10 flex items-center justify-end gap-2 pr-8"
               aria-hidden="true"
@@ -262,6 +274,7 @@ export function MarketplaceContent({
               <span className="h-1.5 w-1.5 rounded-full bg-[#D9944E]/60" />
             </div>
           </div>
+
           {/* IMAGEM DESKTOP */}
           <div className="hidden aspect-square w-full max-w-97.5 overflow-hidden rounded-2xl bg-[#E7E4C7] md:block md:mr-0">
             <img
@@ -271,6 +284,7 @@ export function MarketplaceContent({
             />
           </div>
         </section>
+
         {/* MARKETPLACE */}
         <section id="marketplace" className="scroll-mt-24 pt-1 md:pt-8">
           <div className="grid items-start gap-7 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-9">
@@ -291,12 +305,14 @@ export function MarketplaceContent({
                 onClear={clearFilters}
                 disabled={background}
               />
+
               {!background && (
                 <div className="hidden lg:block">
                   <SidebarFeaturedNFT />
                 </div>
               )}
             </div>
+
             {/* COLUNA DIREITA */}
             <div id="marketplace-results" className="min-w-0 scroll-mt-24">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-b border-[#38251C] md:mb-5">
@@ -323,18 +339,43 @@ export function MarketplaceContent({
                     </button>
                   ))}
                 </div>
+
                 <span className="pb-3 text-[10px] text-[#BFA28D] sm:text-xs">
                   {totalResults} {totalResults === 1 ? "NFT" : "NFTs"}
                 </span>
               </div>
+
+              {/* SKELETON LOADING — REDUZ DESLOCAMENTO VISUAL */}
               {loading && (
-                <div
-                  role="status"
-                  className="rounded-lg border border-[#38251C] bg-[#211712] p-8 text-center text-sm text-[#BFA28D]"
-                >
-                  Carregando NFTs...
+                <div role="status" aria-label="Carregando NFTs">
+                  <span className="sr-only">Carregando NFTs...</span>
+
+                  <div
+                    aria-hidden="true"
+                    className="grid grid-cols-2 items-start gap-x-4 gap-y-7 sm:gap-x-5 sm:gap-y-9 lg:grid-cols-3"
+                  >
+                    {Array.from({ length: 9 }, (_, index) => (
+                      <div
+                        key={index}
+                        className={
+                          index % 2 === 1 ? "relative top-12 lg:top-0" : ""
+                        }
+                      >
+                        <div className="min-w-0 motion-safe:animate-pulse">
+                          <div className="aspect-square rounded-xl bg-[#38251C]" />
+
+                          <div className="px-1 pt-2">
+                            <div className="h-4 w-4/5 rounded bg-[#38251C]" />
+                            <div className="mt-2 h-4 w-2/5 rounded bg-[#38251C]" />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
+
+              {/* ERRO AO CARREGAR NFTs */}
               {hasError && (
                 <div
                   role="alert"
@@ -343,6 +384,7 @@ export function MarketplaceContent({
                   <p className="text-sm text-red-400">
                     Não foi possível carregar os NFTs.
                   </p>
+
                   {!background && (
                     <button
                       type="button"
@@ -354,6 +396,8 @@ export function MarketplaceContent({
                   )}
                 </div>
               )}
+
+              {/* LISTAGEM DOS NFTs */}
               {!loading && !hasError && displayedNFTs.length > 0 && (
                 <div className="grid grid-cols-2 items-start gap-x-4 gap-y-7 sm:gap-x-5 sm:gap-y-9 lg:grid-cols-3">
                   {displayedNFTs.map((nft, index) => (
@@ -368,12 +412,16 @@ export function MarketplaceContent({
                   ))}
                 </div>
               )}
+
+              {/* NENHUM NFT ENCONTRADO */}
               {!loading && !hasError && displayedNFTs.length === 0 && (
                 <div className="rounded-lg border border-[#38251C] bg-[#211712] p-10 text-center">
                   <h2 className="text-lg font-bold">Nenhum NFT encontrado</h2>
+
                   <p className="mt-3 text-sm text-[#BFA28D]">
                     Tente alterar a busca ou os filtros.
                   </p>
+
                   {!background && (
                     <button
                       type="button"
@@ -385,6 +433,8 @@ export function MarketplaceContent({
                   )}
                 </div>
               )}
+
+              {/* PAGINAÇÃO */}
               {!loading && !hasError && totalPages > 1 && (
                 <nav
                   aria-label="Paginação dos NFTs"
@@ -399,6 +449,7 @@ export function MarketplaceContent({
                   >
                     <ChevronLeft size={15} />
                   </button>
+
                   {visiblePageNumbers.map((page) => (
                     <button
                       key={page}
@@ -416,6 +467,7 @@ export function MarketplaceContent({
                       {page}
                     </button>
                   ))}
+
                   <button
                     type="button"
                     disabled={background || safePage === totalPages}
@@ -427,6 +479,8 @@ export function MarketplaceContent({
                   </button>
                 </nav>
               )}
+
+              {/* BANNERS DESKTOP */}
               {!background && (
                 <div className="mt-10 hidden lg:block">
                   <PromotionalBanners />
@@ -435,15 +489,19 @@ export function MarketplaceContent({
             </div>
           </div>
         </section>
+
+        {/* BANNERS MOBILE E DIÁRIO */}
         {!background && (
           <>
             <div className="mt-10 lg:hidden">
               <PromotionalBanners />
             </div>
+
             <MintingJournal />
           </>
         )}
       </main>
+
       {!background && <Footer />}
     </div>
   );
