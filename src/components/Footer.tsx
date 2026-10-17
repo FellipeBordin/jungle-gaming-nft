@@ -266,7 +266,7 @@ export function Footer() {
             Carteiras compatíveis
           </h4>
 
-          <div className="inline-flex flex-wrap items-center gap-2 rounded-md bg-[#B8793B] px-3 py-2 text-[10px] font-bold uppercase text-white">
+          <div className="inline-flex flex-wrap items-center gap-2 rounded-md bg-[#70401F]px-3 py-2 text-[10px] font-bold uppercase text-white">
             <span>MetaMask</span>
             <span>•</span>
             <span>WalletConnect</span>
