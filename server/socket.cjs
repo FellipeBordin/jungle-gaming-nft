@@ -94,12 +94,6 @@ setInterval(() => {
     currentIndex = (currentIndex + 1) % nftIds.length
 }, 10000)
 
-
-const orders = new Map()
-
-httpServer.on('request', (req, res) => {
-    // As rotas HTTP serão configuradas na próxima etapa.
-})
 // Inicia o servidor
 httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`Socket.IO ativo na porta ${PORT}`)

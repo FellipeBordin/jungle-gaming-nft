@@ -192,7 +192,9 @@ export function Checkout() {
     void submitOrder();
   }
 
-  function handleMobileSubmit(event: FormEvent<HTMLFormElement>) {
+  type NewType = FormEvent<HTMLFormElement>;
+
+  function handleMobileSubmit(event: NewType) {
     event.preventDefault();
 
     if (!selectedWallet || !selectedAccount) {
@@ -253,11 +255,11 @@ export function Checkout() {
 
       {/* MOBILE: tela exclusiva de pagamento com carteira */}
 
-      <main className="mx-auto min-h-[100dvh] max-w-[480px] bg-[#140D0A] px-0 pb-0 pt-0 md:hidden">
+      <main className="mx-auto min-h-dvh max-w-120 bg-[#140D0A] px-0 pb-0 pt-0 md:hidden">
         <form
           onSubmit={handleMobileSubmit}
           noValidate
-          className="flex min-h-[100dvh] flex-col rounded-[30px] bg-[#241612] px-5 pb-6 pt-7 sm:px-7"
+          className="flex min-h-dvh flex-col rounded-[30px] bg-[#241612] px-5 pb-6 pt-7 sm:px-7"
         >
           <div className="relative flex items-center gap-4">
             <button
