@@ -1,33 +1,48 @@
-Kurio NFT Marketplace
-Marketplace demonstrativo de NFTs desenvolvido com React, TypeScript e Vite para um desafio técnico de desenvolvimento Front-End da Jungle Gaming.
-A aplicação permite explorar colecionáveis digitais, pesquisar, filtrar e ordenar NFTs, visualizar detalhes, gerenciar um carrinho, criar uma conta e simular uma compra com confirmação de pedido. A interface é responsiva e utiliza uma API simulada para que os fluxos possam ser executados sem um backend de produção ou transações blockchain reais.
-Demonstração
-Aplicação: https://jungle-gaming-nft.vercel.app/
+# Kurio NFT Marketplace
 
-> **Importante:** este projeto é uma demonstração. Carteiras, autenticação e pagamentos são simulados; nenhum NFT é transferido e nenhuma criptomoeda é movimentada.
-> Tecnologias
-> Camada Tecnologias
-> Interface React 19, TypeScript, Vite 8, Tailwind CSS 4, Lucide React
-> Navegação TanStack Router
-> Dados e cache TanStack Query, Axios
-> API demonstrativa Mock Service Worker (MSW)
-> Tempo real Socket.IO (cliente e servidor Node.js)
-> Testes E2E Playwright
-> Hospedagem Vercel (frontend) e Render (servidor Socket.IO)
-> Funcionalidades
-> Catálogo de NFTs com busca textual, filtros por rede, ordenação por preço e paginação.
-> Página de detalhes com informações e disponibilidade de cada NFT.
-> Carrinho com adição, remoção e alteração de quantidades.
-> Cadastro, login e consulta de sessão por endpoints simulados.
-> Área de perfil e histórico demonstrativo de pedidos.
-> Checkout responsivo com seleção visual de carteira e validação de formulário.
-> Criação de pedidos via API simulada, com confirmação e comprovante exibindo o ID retornado pela API.
-> Atualizações simuladas de disponibilidade de NFTs por meio de eventos Socket.IO `nft.updated`.
-> Tratamento de estados de carregamento, erros e respostas vazias em fluxos da interface.
-> Executar localmente
-> Pré-requisitos
-> Node.js e npm compatíveis com o Vite 8.
-> Git para clonar o repositório.
+Marketplace demonstrativo de NFTs desenvolvido com **React, TypeScript e Vite** para o desafio técnico de Front-End da **Jungle Gaming**.
+
+A aplicação permite explorar colecionáveis digitais, pesquisar e filtrar NFTs, visualizar detalhes, gerenciar um carrinho, criar uma conta e simular uma compra com confirmação de pedido. A interface é responsiva e utiliza uma API simulada com MSW.
+
+## Demonstração
+
+- **Aplicação:** https://jungle-gaming-nft.vercel.app/
+- **Código-fonte:** https://github.com/FellipeBordin/jungle-gaming-nft
+- **Arquitetura e decisões técnicas:** [ARCHITECTURE.md](./ARCHITECTURE.md)
+
+> **Projeto demonstrativo:** autenticação, carteiras e pagamentos são simulados. Nenhuma criptomoeda é movimentada e nenhum NFT é transferido em blockchain.
+
+## Tecnologias
+
+| Camada | Tecnologias |
+| --- | --- |
+| Interface | React 19, TypeScript, Vite 8, Tailwind CSS 4, shadcn/ui, Lucide React |
+| Navegação | TanStack Router |
+| Dados e cache | TanStack Query, Axios e chamadas fetch em partes do catálogo |
+| API demonstrativa | Mock Service Worker (MSW) |
+| Tempo real | Socket.IO, com servidor Node.js |
+| Testes | Playwright E2E e regressão visual, desktop e mobile |
+| Hospedagem | Vercel (frontend) e Render (Socket.IO) |
+
+## Funcionalidades
+
+- Catálogo de NFTs com busca textual, filtros por rede, ordenação por preço e paginação.
+- Página de detalhes com informações e disponibilidade de cada NFT.
+- Carrinho com adição, remoção, ajuste de quantidades e persistência após atualizar a página.
+- Separação do carrinho por usuário no navegador, com carrinho de visitante e mesclagem após login.
+- Cadastro, login e recuperação de sessão por endpoints simulados.
+- Área de perfil e histórico demonstrativo de pedidos.
+- Checkout responsivo, com interfaces distintas para desktop e mobile e seleção visual de carteira.
+- Criação de pedidos pela API simulada, com comprovante e ID retornado pela resposta HTTP.
+- Eventos Socket.IO `nft.updated` para simular alterações de disponibilidade.
+- Estados de carregamento, erro e resultados vazios em fluxos da interface.
+
+## Como executar localmente
+
+### Pré-requisitos
+
+- Node.js e npm compatíveis com o Vite 8.
+- Git.
 
 ```bash
 git clone https://github.com/FellipeBordin/jungle-gaming-nft.git
@@ -35,97 +50,142 @@ cd jungle-gaming-nft
 npm install
 ```
 
-Crie um arquivo `.env.local` na raiz do projeto:
+Crie o arquivo `.env.local` na raiz do projeto:
 
 ```env
 VITE_ENABLE_MOCKS=true
 VITE_SOCKET_URL=http://localhost:3001
 ```
 
-Em um terminal, execute o servidor de eventos em tempo real:
+**Terminal 1 — servidor de eventos (opcional):**
 
 ```bash
 node server/socket.cjs
 ```
 
-Em outro terminal, inicie a interface:
+**Terminal 2 — frontend:**
 
 ```bash
 npm run dev
 ```
 
-A aplicação estará disponível no endereço indicado pelo Vite (normalmente `http://localhost:5173`). O servidor Socket.IO utiliza a porta `3001` por padrão.
+Abra o endereço indicado pelo Vite, normalmente `http://localhost:5173`. O Socket.IO utiliza a porta `3001` por padrão.
 
-> O Socket.IO é complementar: a API MSW permite experimentar o catálogo, a autenticação e o fluxo de compra sem um servidor de pedidos real.
-> API simulada
-> Com `VITE_ENABLE_MOCKS=true`, o MSW intercepta as chamadas HTTP realizadas no navegador.
-> Método Endpoint Finalidade
-> `GET` `/api/nfts` Lista NFTs com busca, rede, ordenação e paginação.
-> `GET` `/api/nfts/:id` Consulta detalhes de um NFT.
-> `POST` `/api/auth/register` Cadastra um usuário demonstrativo.
-> `POST` `/api/auth/login` Autentica um usuário demonstrativo.
-> `GET` `/api/auth/me` Consulta a sessão simulada.
-> `POST` `/api/orders` Cria e confirma um pedido demonstrativo.
-> `GET` `/api/orders?email=...` Retorna pedidos associados ao e-mail informado.
-> As respostas do catálogo utilizam dados locais em `src/mocks/fixtures.ts`. Os cadastros e pedidos demonstrativos são armazenados no localStorage do navegador; não constituem um banco de dados nem oferecem persistência entre dispositivos.
-> Tempo real
-> O arquivo `server/socket.cjs` inicia um servidor Socket.IO que emite eventos `nft.updated` periodicamente, alterando a disponibilidade simulada de NFTs. O cliente recebe esses eventos em `src/realtime/SocketListener.tsx` e atualiza o cache do TanStack Query, respeitando a versão do NFT.
-> Há um listener para `order.updated`, mas o fluxo completo de emissão e atualização de status de pedidos em tempo real ainda não foi implementado.
-> Testes e verificações
-> Instale as dependências e o navegador de testes, caso ainda não estejam disponíveis:
+O servidor Socket.IO é complementar: o catálogo, o login e a compra demonstrativa podem ser experimentados com o MSW mesmo sem um servidor real de pedidos. Para usar o Socket.IO hospedado, configure `VITE_SOCKET_URL` com a URL do serviço no ambiente correspondente.
+
+## API simulada
+
+Com `VITE_ENABLE_MOCKS=true`, o MSW intercepta as chamadas HTTP no navegador.
+
+| Método | Endpoint | Finalidade |
+| --- | --- | --- |
+| GET | `/api/nfts` | Listagem, busca, filtros e paginação |
+| GET | `/api/nfts/:id` | Detalhes de um NFT |
+| POST | `/api/auth/register` | Cadastro demonstrativo |
+| POST | `/api/auth/login` | Login demonstrativo |
+| GET | `/api/auth/me` | Recuperação da sessão |
+| POST | `/api/orders` | Criação e confirmação de pedido demonstrativo |
+| GET | `/api/orders?email=...` | Consulta demonstrativa de pedidos pelo e-mail |
+
+As fixtures do catálogo ficam em `src/mocks/fixtures.ts`. Cadastros e pedidos são armazenados no `localStorage` do navegador; **não** constituem um banco de dados compartilhado ou uma autenticação segura de produção.
+
+## Tempo real
+
+O arquivo `server/socket.cjs` inicia um servidor Socket.IO que emite `nft.updated` periodicamente, simulando mudanças de disponibilidade. O cliente recebe os eventos em `src/realtime/SocketListener.tsx` e atualiza entradas específicas do cache do TanStack Query, verificando a versão dos dados.
+
+O evento `order.updated` possui tratamento preparado no cliente, mas a emissão e o ciclo completo de atualização de pedidos ainda não foram implementados. A atualização do catálogo agregado também não cobre todas as chaves de cache utilizadas pelo marketplace.
+
+## Testes e qualidade
+
+Instale o navegador de testes, se necessário:
 
 ```bash
 npm install
 npx playwright install chromium
 ```
 
-Execute os testes E2E:
+Execute todos os testes:
 
 ```bash
 npx playwright test
 ```
 
-Os testes cobrem os seguintes cenários:
-Carregamento da página inicial e exibição dos NFTs.
-Cadastro de usuário e login.
-Abertura dos detalhes de um NFT.
-Inclusão de NFT no carrinho.
-Navegação do carrinho até o checkout.
-Ordenação por menor preço.
-Filtro pela rede Ethereum.
-Compra demonstrativa com validação da resposta da API e do modal de confirmação.
-Outras verificações disponíveis:
+**Última execução local informada: 18 testes aprovados**, sendo:
+
+- **16 testes funcionais:** oito cenários executados em Chromium desktop e no perfil mobile Pixel 7.
+- **2 testes de regressão visual:** captura e comparação da página inicial em desktop e mobile.
+
+Os cenários funcionais incluem carregamento do catálogo, cadastro e login, detalhes de NFT, carrinho, navegação para checkout, ordenação, filtro Ethereum e compra completa com validação da resposta `POST /api/orders` e do modal de confirmação.
+
+Para executar somente a regressão visual:
+
+```bash
+npx playwright test tests/visual.spec.ts
+```
+
+Para atualizar as imagens de referência **intencionalmente**, após uma alteração visual aprovada:
+
+```bash
+npx playwright test tests/visual.spec.ts --update-snapshots
+```
+
+As imagens de referência estão versionadas em `tests/visual.spec.ts-snapshots/` e foram geradas em Windows; diferenças de sistema operacional, navegador e fontes podem afetar a comparação visual.
+
+Outras verificações:
 
 ```bash
 npm run lint
 npm run build
 ```
 
-> O teste de compra utiliza o MSW e não efetua qualquer pagamento real. Para rodar Playwright, utilize a configuração do projeto em `playwright.config.ts`, que inicializa o frontend com os mocks habilitados.
-> Organização do projeto
+O Playwright utiliza a configuração de `playwright.config.ts`, que inicia o frontend com os mocks habilitados. Os testes não realizam pagamentos reais.
+
+### Lighthouse
+
+Medições registradas anteriormente para a página inicial, **antes das alterações mais recentes** (não são uma nova auditoria da versão final):
+
+| Ambiente | Performance | Acessibilidade | Boas práticas | SEO |
+| --- | ---: | ---: | ---: | ---: |
+| Mobile | 97 | 99 | 100 | 100 |
+| Desktop | 100 | 99 | 100 | 100 |
+
+Esses números são resultados de medições pontuais e podem variar conforme ambiente, rede e versão publicada.
+
+## Estrutura do projeto
 
 ```text
 src/
-├── components/       # Componentes reutilizáveis e confirmação de pedidos
+├── components/       # Componentes reutilizáveis e ui/ (shadcn/ui)
 ├── contexts/         # Estado de autenticação e carrinho
-├── hooks/            # Hooks de acesso a dados e contextos
+├── hooks/            # Hooks de dados e contextos
 ├── mocks/            # Fixtures e handlers da API simulada
 ├── pages/            # Marketplace, detalhes, carrinho, checkout e perfil
-├── realtime/         # Integração Socket.IO e atualização de cache
+├── realtime/         # Socket.IO e atualização de cache
 ├── routes/           # Rotas TanStack Router
-├── services/         # Cliente Axios e serviços da aplicação
+├── services/         # Serviços HTTP e cliente Axios
 └── types/            # Tipagens TypeScript
 server/
 └── socket.cjs        # Servidor de eventos Socket.IO
+tests/
+├── marketplace.spec.ts
+├── visual.spec.ts
+└── visual.spec.ts-snapshots/
 public/
-└── nfts/             # Imagens locais dos NFTs
+└── nfts/             # Imagens dos NFTs
 ```
 
-Limitações conhecidas
-O cadastro e a autenticação são mocks de demonstração, não adequados para produção; as credenciais simuladas são armazenadas localmente e não devem ser reutilizadas como senhas reais.
-A escolha de carteira é visual. Não há conexão blockchain, assinatura de transações ou transferência de ativos.
-A API simulada retorna pedidos confirmados; o ciclo completo de estados `pending`, `confirmed` e `rejected`, com atualização por `order.updated`, não está concluído.
-Os dados da API demonstrativa não são compartilhados entre usuários ou dispositivos por um backend persistente.
-Auditorias de desempenho (Lighthouse), snapshots visuais e eventuais melhorias de code splitting podem ser acrescentados como evolução.
-Autor
-Desenvolvido por Fellipe Bordin como parte do desafio técnico da Jungle Gaming.
+## Limitações conhecidas
+
+- Autenticação e cadastro são demonstrativos; dados de teste ficam no navegador e não devem utilizar credenciais reais.
+- A escolha de carteira é visual; não há conexão blockchain, assinatura de transação ou transferência de ativos.
+- A API simulada confirma pedidos sem implementar cotação autoritativa, reserva de estoque, idempotência ou todas as transições de status.
+- O histórico de pedidos é consultado por e-mail na API simulada, sem autorização segura no servidor.
+- Parte das requisições REST ainda utiliza `fetch` diretamente, em vez de passar pelo cliente Axios.
+- As atualizações Socket.IO não cobrem integralmente o catálogo agregado nem o fluxo de status dos pedidos.
+- Os testes de regressão visual cobrem a página inicial; ampliar a cobertura para outras telas e testar isolamento entre contas de forma automatizada são evoluções futuras.
+
+Detalhes sobre responsabilidades, fluxo de dados, decisões técnicas e melhorias propostas estão em [ARCHITECTURE.md](./ARCHITECTURE.md).
+
+## Autor
+
+Desenvolvido por **Fellipe Bordin** como parte do desafio técnico da Jungle Gaming.
