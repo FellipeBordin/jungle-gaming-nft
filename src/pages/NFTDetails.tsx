@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import { Header } from "../components/Header";
+import { Button } from "../components/ui/button";
 import { Footer } from "../components/Footer";
 import { useCart } from "../hooks/useCart";
 import type { NFT, NFTListResponse } from "../types/nft";
@@ -247,14 +248,14 @@ function DetailsContent({ nft, desktop = false }: DetailsContentProps) {
           </div>
 
           <div className="mt-5 grid grid-cols-[1fr_52px] gap-3">
-            <button
+            <Button
               type="button"
               onClick={buyNFT}
               disabled={!canAdd}
-              className="min-h-12 rounded-full bg-[#D9944E] px-4 text-xs font-extrabold text-[#211712] disabled:opacity-40"
+              className="h-auto min-h-12 w-full rounded-full bg-[#D9944E] px-4 text-xs font-extrabold text-[#211712] hover:bg-[#E8A34F] disabled:opacity-40"
             >
               {canAdd ? "Comprar NFT" : "Indisponível"}
-            </button>
+            </Button>
 
             <button
               type="button"
@@ -331,14 +332,14 @@ function DetailsContent({ nft, desktop = false }: DetailsContentProps) {
         {quantityControl}
 
         <div className="flex items-center gap-2">
-          <button
+          <Button
             type="button"
             onClick={buyNFT}
             disabled={!canAdd}
-            className="rounded-lg bg-[#E8A34F] px-7 py-3 text-xs font-bold uppercase text-[#291911] transition hover:bg-[#F5B86D] disabled:opacity-40"
+            className="h-auto rounded-lg bg-[#E8A34F] px-7 py-3 text-xs font-bold uppercase text-[#291911] transition hover:bg-[#F5B86D] disabled:opacity-40"
           >
             {canAdd ? "Comprar" : "Indisponível"}
-          </button>
+          </Button>
 
           <button
             type="button"
