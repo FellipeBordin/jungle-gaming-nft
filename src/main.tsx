@@ -1,16 +1,14 @@
+import React from "react";
+import "./index.css";
+import ReactDOM from "react-dom/client";
+import { RouterProvider } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import React from 'react'
-import './index.css'
-import ReactDOM from 'react-dom/client'
-import { RouterProvider } from '@tanstack/react-router'
-import {
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query'
+import { router } from "./routes/router";
+import { CartProvider } from "./contexts/CartContext";
+import { AuthProvider } from "./contexts/AuthContext";
 
-import { router } from './routes/router'
-import { CartProvider } from './contexts/CartContext'
-import { AuthProvider } from './contexts/AuthContext'
+import { SocketListener } from "./realtime/SocketListener";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,24 +18,24 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
     },
   },
-})
+});
 
 async function enableMocks() {
-  if (import.meta.env.VITE_ENABLE_MOCKS === 'true') {
-    const { worker } = await import('./mocks/browser')
+  if (import.meta.env.VITE_ENABLE_MOCKS === "true") {
+    const { worker } = await import("./mocks/browser");
 
-    await worker.start()
+    await worker.start();
   }
 }
 
 async function bootstrap() {
-  await enableMocks()
+  await enableMocks();
 
-  ReactDOM.createRoot(
-    document.getElementById('root')!,
-  ).render(
+  ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
+        <SocketListener />
+
         <AuthProvider>
           <CartProvider>
             <RouterProvider router={router} />
@@ -45,9 +43,9 @@ async function bootstrap() {
         </AuthProvider>
       </QueryClientProvider>
     </React.StrictMode>,
-  )
+  );
 }
 
 bootstrap().catch((error: unknown) => {
-  console.error('Falha ao iniciar a aplicação:', error)
-})
+  console.error("Falha ao iniciar a aplicação:", error);
+});

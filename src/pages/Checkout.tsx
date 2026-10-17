@@ -125,18 +125,41 @@ export function Checkout() {
     try {
       const order = await createOrder.mutateAsync({
         name: name.trim(),
-
         email: email.trim(),
-
         wallet: wallet.trim(),
-
-        items: items.map(({ nft, quantity }) => ({ nftId: nft.id, quantity })),
+        items: items.map(({ nft, quantity }) => ({
+          nftId: nft.id,
+          quantity,
+        })),
       });
 
+      if (order.status === "pending") {
+        setError(
+          `Pedido ${order.id} recebido e aguardando confirmação. Acompanhe o status no histórico de pedidos.`,
+        );
+        return;
+      }
+
+      if (order.status === "rejected") {
+        setError(
+          `O pedido ${order.id} foi recusado. Nenhuma compra foi concluída.`,
+        );
+        return;
+      }
+
+      if (order.status !== "confirmed") {
+        setError("Não foi possível verificar o status do pedido.");
+        return;
+      }
+
+      // Só mostra o comprovante quando o pedido estiver confirmado.
       setConfirmedOrder({
         id: String(order.id),
         date: new Date(),
-        items: items.map(({ nft, quantity }) => ({ nft, quantity })),
+        items: items.map(({ nft, quantity }) => ({
+          nft,
+          quantity,
+        })),
         totalEth,
         walletName: selectedWallet || walletType || "Não informada",
       });
