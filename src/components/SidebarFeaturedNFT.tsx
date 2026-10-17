@@ -1,3 +1,4 @@
+import { api } from "../services/api";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 
@@ -6,13 +7,7 @@ import type { NFT } from "../types/nft";
 const FEATURED_NFT_ID = "4";
 
 async function fetchFeaturedNFT(): Promise<NFT> {
-  const response = await fetch(`/api/nfts/${FEATURED_NFT_ID}`);
-
-  if (!response.ok) {
-    throw new Error("Não foi possível carregar o NFT em destaque.");
-  }
-
-  const nft = (await response.json()) as NFT;
+  const { data: nft } = await api.get<NFT>(`/nfts/${FEATURED_NFT_ID}`);
 
   if (!nft || nft.id !== FEATURED_NFT_ID) {
     throw new Error("NFT em destaque inválido.");

@@ -1,3 +1,4 @@
+import { api } from "../services/api";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -30,13 +31,8 @@ function formatEth(value: number | string) {
 }
 
 async function fetchRecommendedNFTs(): Promise<NFT[]> {
-  const response = await fetch("/api/nfts?page=1");
+  const { data } = await api.get<NFTListResponse>("/nfts?page=1");
 
-  if (!response.ok) {
-    throw new Error("Não foi possível carregar as recomendações.");
-  }
-
-  const data = (await response.json()) as NFTListResponse;
   return data.items;
 }
 

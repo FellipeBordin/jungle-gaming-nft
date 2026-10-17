@@ -1,5 +1,5 @@
+import { api } from "../services/api";
 import { useQuery } from "@tanstack/react-query";
-
 import { NFTCard } from "./NFTCard";
 
 import type { NFT, NFTListResponse } from "../types/nft";
@@ -7,13 +7,9 @@ import type { NFT, NFTListResponse } from "../types/nft";
 const FEATURED_IDS = ["3", "6", "8"];
 
 async function fetchFeaturedNFTs(): Promise<NFT[]> {
-  const response = await fetch("/api/nfts?page=1&sort=newest&network=all");
-
-  if (!response.ok) {
-    throw new Error("Não foi possível carregar os NFTs em destaque.");
-  }
-
-  const data = (await response.json()) as NFTListResponse;
+  const { data } = await api.get<NFTListResponse>(
+    "/nfts?page=1&sort=newest&network=all",
+  );
 
   if (!Array.isArray(data.items)) {
     throw new Error("Resposta inválida da API.");
@@ -23,15 +19,9 @@ async function fetchFeaturedNFTs(): Promise<NFT[]> {
 
   const remainingPages = await Promise.all(
     Array.from({ length: Math.max(0, totalPages - 1) }, async (_, index) => {
-      const pageResponse = await fetch(
-        `/api/nfts?page=${index + 2}&sort=newest&network=all`,
+      const { data: pageData } = await api.get<NFTListResponse>(
+        `/nfts?page=${index + 2}&sort=newest&network=all`,
       );
-
-      if (!pageResponse.ok) {
-        throw new Error("Não foi possível carregar os NFTs em destaque.");
-      }
-
-      const pageData = (await pageResponse.json()) as NFTListResponse;
 
       if (!Array.isArray(pageData.items)) {
         throw new Error("Resposta inválida da API.");
@@ -47,7 +37,6 @@ async function fetchFeaturedNFTs(): Promise<NFT[]> {
     (nft): nft is NFT => nft !== undefined,
   );
 }
-
 export function FeaturedNFTs() {
   const { data, isPending, isError, refetch } = useQuery({
     queryKey: ["featured-nfts"],

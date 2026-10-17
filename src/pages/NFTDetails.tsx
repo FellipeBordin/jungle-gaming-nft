@@ -1,3 +1,5 @@
+import { isAxiosError } from "axios";
+import { api } from "../services/api";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
@@ -36,25 +38,22 @@ const networkLabels: Record<NFT["network"], string> = {
 };
 
 async function fetchNFT(id: string): Promise<NFT | null> {
-  const response = await fetch(`/api/nfts/${encodeURIComponent(id)}`);
+  try {
+    const { data } = await api.get<NFT>(`/nfts/${encodeURIComponent(id)}`);
 
-  if (response.status === 404) return null;
+    return data;
+  } catch (error) {
+    if (isAxiosError(error) && error.response?.status === 404) {
+      return null;
+    }
 
-  if (!response.ok) {
-    throw new Error("Não foi possível carregar o NFT.");
+    throw error;
   }
-
-  return (await response.json()) as NFT;
 }
 
 async function fetchRelatedNFTs(): Promise<NFT[]> {
-  const response = await fetch("/api/nfts?page=1");
+  const { data } = await api.get<NFTListResponse>("/nfts?page=1");
 
-  if (!response.ok) {
-    throw new Error("Não foi possível carregar os NFTs relacionados.");
-  }
-
-  const data = (await response.json()) as NFTListResponse;
   return data.items;
 }
 

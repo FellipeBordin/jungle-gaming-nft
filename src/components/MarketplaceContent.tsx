@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { api } from "../services/api";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -37,27 +38,29 @@ function buildNFTUrl(filters: MarketplaceSearch, page: number): string {
     network: filters.network,
     sort: filters.sort,
   });
-  return `/api/nfts?${params.toString()}`;
+  return `/nfts?${params.toString()}`;
 }
 async function fetchAllNFTs(filters: MarketplaceSearch): Promise<NFT[]> {
-  const firstResponse = await fetch(buildNFTUrl(filters, 1));
-  if (!firstResponse.ok) {
-    throw new Error("Não foi possível carregar os NFTs.");
-  }
-  const firstPage = (await firstResponse.json()) as NFTListResponse;
+  const { data: firstPage } = await api.get<NFTListResponse>(
+    buildNFTUrl(filters, 1),
+  );
+
   const totalPages = Math.ceil(firstPage.total / firstPage.pageSize);
+
   if (totalPages <= 1) {
     return firstPage.items;
   }
+
   const remainingPages = await Promise.all(
     Array.from({ length: totalPages - 1 }, async (_, index) => {
-      const response = await fetch(buildNFTUrl(filters, index + 2));
-      if (!response.ok) {
-        throw new Error("Não foi possível carregar os NFTs.");
-      }
-      return (await response.json()) as NFTListResponse;
+      const { data } = await api.get<NFTListResponse>(
+        buildNFTUrl(filters, index + 2),
+      );
+
+      return data;
     }),
   );
+
   return [...firstPage.items, ...remainingPages.flatMap((page) => page.items)];
 }
 export function MarketplaceContent({
