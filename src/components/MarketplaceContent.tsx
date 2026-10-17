@@ -315,6 +315,24 @@ export function MarketplaceContent({
 
             {/* COLUNA DIREITA */}
             <div id="marketplace-results" className="min-w-0 scroll-mt-24">
+              {/* FILTROS MOBILE E TABLET */}
+              <div className="mb-5 lg:hidden">
+                <MarketplaceFilters
+                  nfts={allNFTs}
+                  network={filters.network}
+                  sort={filters.sort}
+                  category={category}
+                  minPrice={minPrice}
+                  maxPrice={maxPrice}
+                  onNetworkChange={changeNetwork}
+                  onSortChange={changeSort}
+                  onCategoryChange={changeCategory}
+                  onMinPriceChange={changeMinPrice}
+                  onMaxPriceChange={changeMaxPrice}
+                  onClear={clearFilters}
+                  disabled={background}
+                />
+              </div>
               <div className="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-b border-[#38251C] md:mb-5">
                 <div
                   role="tablist"

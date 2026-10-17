@@ -16,9 +16,11 @@ test.describe("Kurio NFT Marketplace", () => {
   });
 
   // TESTE 2 — Compra completa com confirmação pela API
+
   test("deve confirmar uma compra pela API simulada", async ({ page }) => {
     const email = `compra-${Date.now()}@kurio.test`;
     const password = "Teste123456";
+    const isMobile = test.info().project.name === "mobile-chrome";
 
     // 1. Inicializa o MSW.
     await page.goto("/");
@@ -83,9 +85,9 @@ test.describe("Kurio NFT Marketplace", () => {
       page.getByText(/unidade adicionada ao carrinho/i),
     ).toBeVisible();
 
-    // 6. Acessa o carrinho pelo link real da aplicação.
+    // 6. Acessa o carrinho.
     const cartLink = page.getByRole("link", {
-      name: /Carrinho com \d+ itens/i,
+      name: /Ver carrinho/i,
     });
 
     await expect(cartLink).toBeVisible();
@@ -105,50 +107,91 @@ test.describe("Kurio NFT Marketplace", () => {
 
     await expect(page).toHaveURL(/\/checkout/);
 
-    // 8. Preenche os campos obrigatórios do checkout.
-    await page.locator("#name").fill("Comprador Playwright");
-    await page.locator("#username").fill("comprador");
-    await page.locator("#network").selectOption("ethereum");
-    await page.locator("#profileName").fill("Colecionador");
+    // 8. Preenche o checkout conforme o dispositivo.
+    if (isMobile) {
+      // Seleciona uma conta demonstrativa.
+      const accountButton = page.getByRole("button", {
+        name: /Principal.*Ethereum/i,
+      });
 
-    await page
-      .locator("#wallet")
-      .fill("0x1234567890123456789012345678901234567890");
+      await expect(accountButton).toBeVisible();
+      await accountButton.click();
 
-    await page.locator("#walletType").selectOption("WalletConnect");
-    await page.locator("#email").fill(email);
+      await expect(accountButton).toHaveAttribute("aria-pressed", "true");
 
-    // 9. Seleciona a carteira visualmente.
-    // O checkout exige selectedWallet além do campo walletType.
-    const walletButton = page.getByRole("button", {
-      name: "WalletConnect",
-      exact: true,
-    });
+      // Seleciona a carteira.
+      const walletButton = page
+        .locator("main.md\\:hidden")
+        .getByRole("button", { name: /WalletConnect/i });
 
-    await expect(walletButton).toBeVisible();
-    await walletButton.click();
+      await expect(walletButton).toBeVisible();
+      await walletButton.click();
 
-    await expect(walletButton).toHaveAttribute("aria-pressed", "true");
+      await expect(walletButton).toHaveAttribute("aria-pressed", "true");
 
-    // 10. Aguarda a resposta da API simulada.
+      // Abre o formulário de dados do pedido.
+      await page
+        .getByRole("button", {
+          name: /Dados necessários para registrar o pedido/i,
+        })
+        .click();
+
+      // Preenche os dados obrigatórios.
+      await page.locator("#mobile-name").fill("Comprador Playwright");
+
+      await page.locator("#mobile-email").fill(email);
+
+      await page
+        .locator("#mobile-wallet")
+        .fill("0x1234567890123456789012345678901234567890");
+    } else {
+      // Formulário desktop.
+      await page.locator("#name").fill("Comprador Playwright");
+      await page.locator("#username").fill("comprador");
+      await page.locator("#network").selectOption("ethereum");
+      await page.locator("#profileName").fill("Colecionador");
+
+      await page
+        .locator("#wallet")
+        .fill("0x1234567890123456789012345678901234567890");
+
+      await page.locator("#walletType").selectOption("WalletConnect");
+
+      await page.locator("#email").fill(email);
+
+      // Seleciona a carteira visualmente.
+      const walletButton = page.getByRole("button", {
+        name: "WalletConnect",
+        exact: true,
+      });
+
+      await expect(walletButton).toBeVisible();
+      await walletButton.click();
+
+      await expect(walletButton).toHaveAttribute("aria-pressed", "true");
+    }
+
+    // 9. Aguarda a resposta da API simulada.
     const orderResponsePromise = page.waitForResponse(
       (response) =>
         response.url().includes("/api/orders") &&
         response.request().method() === "POST",
     );
 
-    // 11. Confirma a compra.
+    // 10. Confirma a compra.
     const confirmButton = page.getByRole("button", {
       name: "Confirmar compra",
       exact: true,
     });
 
+    await expect(confirmButton).toBeVisible();
     await expect(confirmButton).toBeEnabled();
+
     await confirmButton.click();
 
     const orderResponse = await orderResponsePromise;
 
-    // 12. Verifica o retorno da API.
+    // 11. Verifica a resposta da API.
     expect(orderResponse.status()).toBe(201);
 
     const order = await orderResponse.json();
@@ -156,14 +199,14 @@ test.describe("Kurio NFT Marketplace", () => {
     expect(order.status).toBe("confirmed");
     expect(order.id).toBeTruthy();
 
-    // 13. Verifica a confirmação visual da compra.
+    // 12. Verifica a confirmação visual.
     const confirmation = page.getByRole("dialog");
 
     await expect(confirmation).toBeVisible();
 
     await expect(confirmation.getByText("Pedido confirmado!")).toBeVisible();
 
-    // O modal deve apresentar o mesmo ID retornado pela API.
+    // O ID exibido deve ser o mesmo retornado pela API.
     await expect(confirmation.getByText(order.id)).toBeVisible();
   });
 
@@ -256,7 +299,7 @@ test.describe("Kurio NFT Marketplace", () => {
     // Navega pelo link do cabeçalho.
     await page
       .getByRole("link", {
-        name: /Carrinho com \d+ itens/i,
+        name: /Ver carrinho/i,
       })
       .click();
 
@@ -289,7 +332,7 @@ test.describe("Kurio NFT Marketplace", () => {
 
     // Navega pelo cabeçalho.
     const cartLink = page.getByRole("link", {
-      name: /Carrinho com \d+ itens/i,
+      name: /Ver carrinho/i,
     });
 
     await expect(cartLink).toBeVisible();
@@ -311,16 +354,46 @@ test.describe("Kurio NFT Marketplace", () => {
     // Confirma que chegou ao checkout.
     await expect(page).toHaveURL(/\/checkout/);
 
-    await expect(page.locator("#name")).toBeVisible();
+    const isMobile = test.info().project.name === "mobile-chrome";
+
+    if (isMobile) {
+      await expect(
+        page.getByRole("heading", { name: "Pagamento com carteira" }),
+      ).toBeVisible();
+
+      await page
+        .getByRole("button", {
+          name: /Dados necessários para registrar o pedido/i,
+        })
+        .click();
+
+      await expect(page.locator("#mobile-name")).toBeVisible();
+    } else {
+      await expect(page.locator("#name")).toBeVisible();
+    }
   });
 
   // TESTE 7 — Ordenação por menor preço
   test("deve ordenar os NFTs pelo menor preço", async ({ page }) => {
     await page.goto("/");
 
-    const sort = page.locator("#desktop-sort");
+    const isMobile = test.info().project.name === "mobile-chrome";
+
+    if (isMobile) {
+      await page
+        .locator("#marketplace-results summary")
+        .filter({ hasText: "Coleções e filtros" })
+        .click();
+    }
+
+    const sort = page.locator(
+      isMobile
+        ? "#marketplace-results #mobile-sort:visible"
+        : "#desktop-sort:visible",
+    );
 
     await expect(sort).toBeVisible();
+    await expect(sort).toBeEnabled();
 
     await sort.selectOption("price_asc");
 
@@ -332,13 +405,25 @@ test.describe("Kurio NFT Marketplace", () => {
   test("deve filtrar NFTs pela rede Ethereum", async ({ page }) => {
     await page.goto("/");
 
+    const isMobile = test.info().project.name === "mobile-chrome";
+
+    if (isMobile) {
+      await page
+        .locator("#marketplace-results summary")
+        .filter({ hasText: "Coleções e filtros" })
+        .click();
+    }
+
+    const prefix = isMobile ? "mobile" : "desktop";
+
     const ethereum = page
-      .locator('input[name="desktop-network"][type="radio"]')
+      .locator(`input[name="${prefix}-network"][type="radio"]:visible`)
       .nth(1);
 
+    await expect(ethereum).toBeVisible();
     await expect(ethereum).toBeEnabled();
 
-    await ethereum.check();
+    await ethereum.click();
 
     await expect(page).toHaveURL(/network=ethereum/);
   });
